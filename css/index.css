@@ -1,0 +1,96 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    background-image: url('../assets/img/board-background.png');
+    background-position: center top;
+    margin: 0;
+}
+
+.btn {
+    background: #ffdc10;
+    border-radius: 6px;
+    border:none;
+    display:inline-block;
+    padding:12px 24px;
+    vertical-align:middle;
+    overflow:hidden;
+    text-decoration:none;
+    color: #333;
+    text-align:center;
+    cursor:pointer;
+    white-space:nowrap;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none
+}
+
+.btn:hover {
+    box-shadow:0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+#app-icon {
+    display: block;
+    height: 80px;
+    width: 80px;
+    margin: 0 auto;
+}
+
+#app-name {
+    color: #fff;
+    font-size: 44px;
+    font-weight: 400;
+    margin: 20px 0 0 0;
+    padding: 0;
+}
+
+#waiting {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 300;
+  margin: 0;
+  padding-top: 8px;
+}
+
+#join-btn {
+    margin-top: 45px;
+    margin-bottom: 0px;
+}
+
+#home {
+    padding: 10px;
+}
+
+#board {
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+}
+
+.highlight-opponent {
+    box-shadow: inset 0 0 3px 3px #3fa6e3;
+}
+
+#app {
+  width:100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#footer {
+    position: fixed;
+    bottom: 3px;
+    left: 3px;
+    width: 100%;
+    color: #ddd;
+    text-decoration: none;
+}
