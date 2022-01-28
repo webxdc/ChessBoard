@@ -18,6 +18,7 @@ The output is a file with `.xdc` extension.
 ## License
 
 Licensed GPLv3+, see the LICENSE file for details.
+
 Copyright © 2022  Asiel Díaz Benítez.
 
 The chess pieces images are licensed under the `Creative Commons Attribution-Share Alike 3.0 Unported` license and were taken from:
