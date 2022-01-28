@@ -34,8 +34,8 @@ function loadState(payload) {
     if (payload.fen) {
         highlightMove = payload.lastMove;
         game.load(payload.fen);
-        updateStatus();
     }
+    updateStatus();
 }
 
 
@@ -106,12 +106,12 @@ $(() => {
             );
             if (whiteAddr === window.webxdc.selfAddr()) {
                 div.children.push(
-                    m("h3#waiting", "Waiting for opponent...")
+                    m("h3.sub", "Waiting for opponent...")
                 );
             } else {
                 if (whiteAddr) {
                     div.children.push(
-                        m("h3#waiting", whiteName + " is waiting for opponent...")
+                        m("h3.sub", whiteName + " is waiting for opponent...")
                     );
                 }
                 div.children.push(

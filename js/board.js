@@ -1,5 +1,9 @@
 const BoardComponent = {
-    view: () => m("div#board"),
+    view: () => [
+        m("h3.sub", whiteName + " Vs. " + blackName),
+        m("div#board"),
+        m("h3.sub", status)
+    ],
     oncreate: () => initBoard()
 };
 
