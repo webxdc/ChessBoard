@@ -109,6 +109,11 @@ $(() => {
                     m("h3#waiting", "Waiting for opponent...")
                 );
             } else {
+                if (whiteAddr) {
+                    div.children.push(
+                        m("h3#waiting", whiteName + " is waiting for opponent...")
+                    );
+                }
                 div.children.push(
                     m("a#join-btn", {
                         class: "btn",
