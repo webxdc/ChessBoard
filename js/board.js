@@ -14,7 +14,7 @@ function initBoard() {
         draggable: true,
         pieceTheme: "assets/img/{piece}.svg",
         position: game.fen(),
-        orientation: (blackAddr === window.webxdc.selfAddr()) ? "black" : "white",
+        orientation: (blackAddr === window.webxdc.selfAddr) ? "black" : "white",
         onDragStart: onDragStart,
         onDrop: onDrop,
         onSnapEnd: onSnapEnd,
@@ -53,7 +53,7 @@ function onDragStart(source, piece, position, orientation) {
     // do not pick up pieces if the game is over
     if (game.game_over()) return false;
 
-    const addr = window.webxdc.selfAddr();
+    const addr = window.webxdc.selfAddr;
     if ((game.turn() === "w" && (whiteAddr !== addr || piece.search(/^b/) !== -1)) ||
         (game.turn() === "b" && (blackAddr !== addr || piece.search(/^w/) !== -1))) {
         return false;
