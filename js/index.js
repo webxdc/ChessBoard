@@ -5,58 +5,39 @@ let board,
     whiteName = undefined,
     blackAddr = undefined,
     blackName = undefined,
-    highlightMove = undefined;
+    lastMove = undefined;
 
 
 function receiveUpdate(update) {
     const payload = update.payload;
-    loadState(payload);
-    if (payload.fen) {
-        const addr = window.webxdc.selfAddr;
-        const fromSelf = ((game.turn() === "b" && whiteAddr === addr) ||
-                          (game.turn() === "w" && blackAddr === addr));
-        // state only needs to be updated when opponent moved
-        if (!fromSelf) {
-            board.position(payload.fen);
+    if (payload.move) {
+        if (lastMove !== payload.move) {  // the move is not from self
+            game.move(payload.move);
+            lastMove = payload.move;
+            board.position(game.fen());
+            setHighlight();
+            updateStatus();
         }
-        setHighlight();
+    } else if (payload.whiteAddr && !whiteAddr) {
+        whiteAddr = payload.whiteAddr;
+        whiteName = payload.whiteName;
+    } else if (payload.blackAddr && !blackAddr) {
+        blackAddr = payload.blackAddr;
+        blackName = payload.blackName;
     }
     m.redraw();
-}
-
-
-function loadState(payload) {
-    whiteAddr = payload.whiteAddr;
-    whiteName = payload.whiteName;
-    blackAddr = payload.blackAddr;
-    blackName = payload.blackName;
-
-    if (payload.fen) {
-        highlightMove = payload.lastMove;
-        game.load(payload.fen);
-    }
-    updateStatus();
 }
 
 
 function joinGame() {
     const addr = window.webxdc.selfAddr;
     const name = window.webxdc.selfName;
-    const update = {
-        payload: {
-            whiteAddr: whiteAddr,
-            whiteName: whiteName,
-            blackAddr: blackAddr,
-            blackName: blackName
-        }
-    };
+    const update = {};
     if (!whiteAddr) {
-        update.payload.whiteAddr = addr;
-        update.payload.whiteName = name;
+        update.payload = {whiteAddr: addr, whiteName: name};
         update.summary = name + " is waiting for an opponent";
     } else if (!blackAddr && whiteAddr !== addr) {
-        update.payload.blackAddr = addr;
-        update.payload.blackName = name;
+        update.payload = {blackAddr: addr, blackName: name};
         updateStatus();
         update.summary = status;
     } else {
@@ -89,10 +70,21 @@ $(() => {
 
     window.webxdc.getAllUpdates().then((updates) => {
         // load game state
-        if (updates.length > 0) {
-            const payload = updates[updates.length - 1].payload;
-            loadState(payload);
-        }
+        updates.forEach((update) => {
+            const payload = update.payload;
+            if (payload.move) {
+                if (game.move(payload.move)) {
+                    lastMove = payload.move;
+                }
+            } else if (payload.whiteAddr && !whiteAddr) {
+                whiteAddr = payload.whiteAddr;
+                whiteName = payload.whiteName;
+            } else if (payload.blackAddr && !blackAddr) {
+                blackAddr = payload.blackAddr;
+                blackName = payload.blackName;
+            }
+        });
+        updateStatus();
 
         const root = document.getElementById("app");
         const HomeComponent = {

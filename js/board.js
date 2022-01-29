@@ -31,9 +31,9 @@ function initBoard() {
 
 function setHighlight() {
     $board.find('.square-55d63').removeClass('highlight-opponent');
-    if (highlightMove) {
-        $board.find(".square-" + highlightMove.from).addClass("highlight-opponent");
-        $board.find(".square-" + highlightMove.to).addClass("highlight-opponent");
+    if (lastMove) {
+        $board.find(".square-" + lastMove.from).addClass("highlight-opponent");
+        $board.find(".square-" + lastMove.to).addClass("highlight-opponent");
     }
 }
 
@@ -78,28 +78,19 @@ function onDragStart(source, piece, position, orientation) {
 function onDrop(source, target) {
     removeGreySquares();
 
-    // see if the move is legal
-    const move = game.move({
+    const move = {
         from: source,
         to: target,
-        promotion: "q" // NOTE: always promote to a queen for example simplicity
-    });
+        promotion: "q" // NOTE: always promote to a queen for simplicity
+    };
 
     // illegal move
-    if (move === null) return "snapback";
+    if (game.move(move) === null) return "snapback";
 
-    const desc = "Chess: " + source + "-" + target,
-          update = {
-              payload: {
-                  whiteAddr: whiteAddr,
-                  whiteName: whiteName,
-                  blackAddr: blackAddr,
-                  blackName: blackName,
-                  lastMove: {from: source, to: target},
-                  fen: game.fen()
-              }
-          };
+    lastMove = move;
     updateStatus();
+    const desc = "Chess: " + source + "-" + target,
+          update = {payload: {move: move}};
     update.summary = status;
     if (game.game_over()) {
         update.info = "Chess: " + status;
@@ -112,4 +103,5 @@ function onDrop(source, target) {
 // for castling, en passant, pawn promotion
 function onSnapEnd() {
     board.position(game.fen());
+    setHighlight();
 }
