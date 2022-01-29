@@ -85,8 +85,6 @@ function updateStatus() {
 
 
 $(() => {
-    $("body").append('<footer id="footer">v0.1</footer>');
-
     game = new Chess();
 
     window.webxdc.getAllUpdates().then((updates) => {
