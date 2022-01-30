@@ -56,7 +56,8 @@ function getSummary() {
 
     let summary;
     if (game.in_checkmate()) {
-        summary = "Game over, " + name + " is in checkmate";
+        const winner = normalizeName((game.turn() === "b")? whiteName : blackName);
+        summary = "Game over, " + name + " is in checkmate, " + winner + " wins";
     } else if (game.in_draw()) {
         summary = "Game over, drawn position";
     } else {  // game still on

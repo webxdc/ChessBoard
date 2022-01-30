@@ -19,7 +19,8 @@ function getStatus() {
 
     let status;
     if (game.in_checkmate()) {
-        status = ["Game over, ", name, " is in checkmate"];
+        const winner = (game.turn() === "b")? m("div.tag.white", normalizeName(whiteName)) : m("div.tag.black", normalizeName(blackName));
+        status = ["Game over, ", name, " is in checkmate, ", winner, " wins"];
     } else if (game.in_draw()) {
         status = "Game over, drawn position";
     } else {  // game still on
