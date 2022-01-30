@@ -6,7 +6,8 @@ let board,
     blackName = undefined,
     request = undefined,
     surrenderAddr = undefined,
-    lastMove = undefined;
+    lastMove = undefined,
+    inReplayMode = false;
 
 
 function receiveUpdate(update) {
@@ -78,6 +79,30 @@ function surrender() {
     const desc = "Chess: " + update.summary;
     window.webxdc.sendUpdate(update, desc);
 }
+
+
+function replay() {
+    inReplayMode = true;
+    const history = game.history();
+    game.reset();
+    board.position('start');
+    var i = 0;
+
+    function runTurn() {
+        setTimeout(function() {
+            game.move(history[i]);
+            board.position(game.fen());
+            m.redraw();
+            i++;
+            if (i < history.length) {
+                runTurn();
+            }
+        }, 1500)
+    }
+
+    runTurn();
+}
+
 
 function normalizeName(name) {
     return name.length > 16 ? name.substring(0, 16) + '…' : name;

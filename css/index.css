@@ -13,7 +13,7 @@ body {
     border-radius: 6px;
     border:none;
     display:inline-block;
-    padding:12px 24px;
+    padding:8px 16px;
     vertical-align:middle;
     overflow:hidden;
     text-decoration:none;
@@ -80,16 +80,16 @@ body {
 #join-btn {
     margin-top: 45px;
     margin-bottom: 0px;
+    padding:12px 24px;
 }
 
-#surrender-btn {
+#game .btn {
     margin-top: 1em;
     margin-bottom: 0px;
-    padding:8px 16px;
 }
 
 #home {
-    padding: 10px;
+    margin: 10px;
 }
 
 #board {
@@ -99,7 +99,7 @@ body {
     margin-bottom: 10px;
 }
 
-#board-container {
+#game {
     width: 100%;
     max-width: 400px;
     margin-top: 10px;

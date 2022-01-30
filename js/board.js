@@ -1,7 +1,7 @@
 const BoardComponent = {
     view: () => {
         $("#root").css("align-items", "");
-        const container = m("div#board-container", [
+        const container = m("div#game", [
             m("h3.sub", [
                 m("div.tag.white", normalizeName(whiteName)),
                 " Vs. ",
@@ -11,9 +11,16 @@ const BoardComponent = {
             m("h3.sub", getStatus())
         ]);
         const turn = (game.turn() === "w")? whiteAddr : blackAddr;
-        if (!surrenderAddr && !game.game_over() && window.webxdc.selfAddr === turn) {
+        if (surrenderAddr || game.game_over()) {
             container.children.push(
-                m("a#surrender-btn", {
+                m("a", {
+                    class: "btn",
+                    onclick: () => replay()
+                }, "Replay")
+            );
+        } else if (!inReplayMode && window.webxdc.selfAddr === turn) {
+            container.children.push(
+                m("a", {
                     class: "btn",
                     onclick: () => surrender()
                 }, "Surrender")
@@ -90,7 +97,7 @@ function greySquare(square) {
 
 function onDragStart(source, piece, position, orientation) {
     // do not pick up pieces if the game is over
-    if (surrenderAddr || game.game_over()) return false;
+    if (inReplayMode || surrenderAddr || game.game_over()) return false;
 
     const addr = window.webxdc.selfAddr;
     if ((game.turn() === "w" && (whiteAddr !== addr || piece.search(/^b/) !== -1)) ||
