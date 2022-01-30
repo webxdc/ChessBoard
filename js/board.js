@@ -1,5 +1,6 @@
 const BoardComponent = {
     view: () => {
+        $("#root").css("align-items", "");
         const container = m("div#board-container", [
             m("h3.sub", [
                 m("div.tag.white", normalizeName(whiteName)),

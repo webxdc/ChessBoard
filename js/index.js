@@ -140,9 +140,10 @@ $(() => {
             window.webxdc.sendUpdate(update, desc);
         }
 
-        const root = document.getElementById("app");
+        const root = document.getElementById("root");
         const HomeComponent = {
             view: () => {
+                $("#root").css("align-items", "center");
                 let div = m("div#home");
                 div.children.push(
                     m("img#app-icon", {src: "assets/img/bK.svg"}),
