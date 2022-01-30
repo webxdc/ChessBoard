@@ -1,6 +1,5 @@
 let board,
     game,
-    status = undefined,
     whiteAddr = undefined,
     whiteName = undefined,
     blackAddr = undefined,
@@ -16,7 +15,6 @@ function receiveUpdate(update) {
             lastMove = payload.move;
             board.position(game.fen());
             setHighlight();
-            updateStatus();
         }
     } else if (payload.whiteAddr && !whiteAddr) {
         whiteAddr = payload.whiteAddr;
@@ -35,11 +33,10 @@ function joinGame() {
     const update = {};
     if (!whiteAddr) {
         update.payload = {whiteAddr: addr, whiteName: name};
-        update.summary = name + " is waiting for an opponent";
+        update.summary = normalizeName(name) + " is waiting for an opponent";
     } else if (!blackAddr && whiteAddr !== addr) {
         update.payload = {blackAddr: addr, blackName: name};
-        updateStatus();
-        update.summary = status;
+        update.summary = getSummary();
     } else {
         console.log("Warning: ignoring call to joinGame()");
         return;
@@ -49,19 +46,26 @@ function joinGame() {
 }
 
 
-function updateStatus() {
-    const name = (game.turn() === "w")? whiteName : blackName;
+function normalizeName(name) {
+    return name.length > 16 ? name.substring(0, 16) + '…' : name;
+}
 
+
+function getSummary() {
+    const name = normalizeName((game.turn() === "w")? whiteName : blackName);
+
+    let summary;
     if (game.in_checkmate()) {
-        status = "Game over, " + name + " is in checkmate";
+        summary = "Game over, " + name + " is in checkmate";
     } else if (game.in_draw()) {
-        status = "Game over, drawn position";
+        summary = "Game over, drawn position";
     } else {  // game still on
-        status = "Turn: " + name;
+        summary = "Turn: " + name;
         if (game.in_check()) {
-            status += " (in check)";
+            summary += " (in check)";
         }
     }
+    return summary;
 }
 
 
@@ -84,7 +88,6 @@ $(() => {
                 blackName = payload.blackName;
             }
         });
-        updateStatus();
 
         const root = document.getElementById("app");
         const HomeComponent = {
@@ -101,7 +104,10 @@ $(() => {
                 } else {
                     if (whiteAddr) {
                         div.children.push(
-                            m("h3.sub", whiteName + " is waiting for opponent...")
+                            m("h3.sub", [
+                                m("div.tag.white", normalizeName(whiteName)),
+                                " is waiting for opponent..."
+                            ])
                         );
                     }
                     div.children.push(

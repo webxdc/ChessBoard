@@ -40,6 +40,24 @@ body {
   margin: 0;
 }
 
+.tag {
+    display:inline-block;
+    padding-left:8px;
+    padding-right:8px;
+    text-align:center;
+    border-radius: 5px;
+}
+
+.black {
+    background-color:#000;
+    color:#fff;
+}
+
+.white {
+    background-color:#fff;
+    color:#000;
+}
+
 #home .sub {
     padding-top: 8px;
 }

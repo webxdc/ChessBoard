@@ -1,11 +1,35 @@
 const BoardComponent = {
-    view: () => m("div#board-container", [
-        m("h3.sub", whiteName + " Vs. " + blackName),
-        m("div#board"),
-        m("h3.sub", status)
-    ]),
+    view: () => {
+        return m("div#board-container", [
+            m("h3.sub", [
+                m("div.tag.white", normalizeName(whiteName)),
+                " Vs. ",
+                m("div.tag.black", normalizeName(blackName))
+            ]),
+            m("div#board"),
+            m("h3.sub", getStatus())
+        ]);
+    },
     oncreate: () => initBoard()
 };
+
+
+function getStatus() {
+    const name = (game.turn() === "w")? m("div.tag.white", normalizeName(whiteName)) : m("div.tag.black", normalizeName(blackName));
+
+    let status;
+    if (game.in_checkmate()) {
+        status = ["Game over, ", name, " is in checkmate"];
+    } else if (game.in_draw()) {
+        status = "Game over, drawn position";
+    } else {  // game still on
+        status = ["Turn: ", name];
+        if (game.in_check()) {
+            status.push(" (in check)");
+        }
+    }
+    return status;
+}
 
 
 function initBoard() {
@@ -88,12 +112,11 @@ function onDrop(source, target) {
     if (game.move(move) === null) return "snapback";
 
     lastMove = move;
-    updateStatus();
     const desc = "Chess: " + source + "-" + target,
           update = {payload: {move: move}};
-    update.summary = status;
+    update.summary = getSummary();
     if (game.game_over()) {
-        update.info = "Chess: " + status;
+        update.info = "Chess: " + update.summary;
     }
     window.webxdc.sendUpdate(update, desc)
  }
