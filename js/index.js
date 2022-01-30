@@ -4,6 +4,7 @@ let board,
     whiteName = undefined,
     blackAddr = undefined,
     blackName = undefined,
+    surrenderAddr = undefined,
     lastMove = undefined;
 
 
@@ -16,6 +17,8 @@ function receiveUpdate(update) {
             board.position(game.fen());
             setHighlight();
         }
+    } else if (payload.surrenderAddr) {
+        surrenderAddr = payload.surrenderAddr;
     } else if (payload.whiteAddr && !whiteAddr) {
         whiteAddr = payload.whiteAddr;
         whiteName = payload.whiteName;
@@ -41,10 +44,26 @@ function joinGame() {
         console.log("Warning: ignoring call to joinGame()");
         return;
     }
-    const desc = "Chess: " + name + " joined the game.";
+    const desc = "Chess: " + normalizeName(name) + " joined the game";
     window.webxdc.sendUpdate(update, desc);
 }
 
+
+function surrender() {
+    if (surrenderAddr) {
+        console.log("Warning: ignoring call to surrender()");
+        return;
+    }
+
+    const winner = normalizeName((game.turn() === "b")? whiteName : blackName);
+    const update = {
+        payload: {surrenderAddr: window.webxdc.selfAddr},
+        summary: normalizeName(window.webxdc.selfName) + " surrenders, " + winner + " wins"
+    };
+    update.info = "Chess: " + update.summary;
+    const desc = "Chess: " + update.summary;
+    window.webxdc.sendUpdate(update, desc);
+}
 
 function normalizeName(name) {
     return name.length > 16 ? name.substring(0, 16) + '…' : name;
@@ -81,6 +100,8 @@ $(() => {
                 if (game.move(payload.move)) {
                     lastMove = payload.move;
                 }
+            } else if (payload.surrenderAddr) {
+                surrenderAddr = payload.surrenderAddr;
             } else if (payload.whiteAddr && !whiteAddr) {
                 whiteAddr = payload.whiteAddr;
                 whiteName = payload.whiteName;

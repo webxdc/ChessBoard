@@ -1,6 +1,6 @@
 const BoardComponent = {
     view: () => {
-        return m("div#board-container", [
+        const container = m("div#board-container", [
             m("h3.sub", [
                 m("div.tag.white", normalizeName(whiteName)),
                 " Vs. ",
@@ -9,6 +9,16 @@ const BoardComponent = {
             m("div#board"),
             m("h3.sub", getStatus())
         ]);
+        const turn = (game.turn() === "w")? whiteAddr : blackAddr;
+        if (!surrenderAddr && !game.game_over() && window.webxdc.selfAddr === turn) {
+            container.children.push(
+                m("a#surrender-btn", {
+                    class: "btn",
+                    onclick: () => surrender()
+                }, "Surrender")
+            );
+        }
+        return container;
     },
     oncreate: () => initBoard()
 };
@@ -21,6 +31,9 @@ function getStatus() {
     if (game.in_checkmate()) {
         const winner = (game.turn() === "b")? m("div.tag.white", normalizeName(whiteName)) : m("div.tag.black", normalizeName(blackName));
         status = ["Game over, ", name, " is in checkmate, ", winner, " wins"];
+    } else if (surrenderAddr) {
+        const winner = (game.turn() === "b")? m("div.tag.white", normalizeName(whiteName)) : m("div.tag.black", normalizeName(blackName));
+        status = ["Game over, ", name, " surrenders, ", winner, " wins"];
     } else if (game.in_draw()) {
         status = "Game over, drawn position";
     } else {  // game still on
@@ -76,7 +89,7 @@ function greySquare(square) {
 
 function onDragStart(source, piece, position, orientation) {
     // do not pick up pieces if the game is over
-    if (game.game_over()) return false;
+    if (surrenderAddr || game.game_over()) return false;
 
     const addr = window.webxdc.selfAddr;
     if ((game.turn() === "w" && (whiteAddr !== addr || piece.search(/^b/) !== -1)) ||
