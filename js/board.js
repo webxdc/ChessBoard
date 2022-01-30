@@ -54,10 +54,10 @@ function initBoard() {
 
 
 function setHighlight() {
-    $board.find('.square-55d63').removeClass('highlight-opponent');
+    $board.find('.square-55d63').removeClass('highlight-lastmove');
     if (lastMove) {
-        $board.find(".square-" + lastMove.from).addClass("highlight-opponent");
-        $board.find(".square-" + lastMove.to).addClass("highlight-opponent");
+        $board.find(".square-" + lastMove.from).addClass("highlight-lastmove");
+        $board.find(".square-" + lastMove.to).addClass("highlight-lastmove");
     }
 }
 
