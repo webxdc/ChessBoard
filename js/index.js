@@ -4,6 +4,7 @@ let board,
     whiteName = undefined,
     blackAddr = undefined,
     blackName = undefined,
+    request = undefined,
     surrenderAddr = undefined,
     lastMove = undefined;
 
@@ -22,6 +23,21 @@ function receiveUpdate(update) {
     } else if (payload.whiteAddr && !whiteAddr) {
         whiteAddr = payload.whiteAddr;
         whiteName = payload.whiteName;
+    } else if (!request && payload.request && payload.request === whiteAddr) {
+        request = payload;
+        if (window.webxdc.selfAddr === whiteAddr) {
+            blackAddr = payload.addr;
+            blackName = payload.name;
+            const desc = "Chess: " + normalizeName(blackName) + " joined the game";
+            const update = {
+                payload: {
+                    blackAddr: blackAddr,
+                    blackName: blackName
+                },
+                summary: getSummary()
+            };
+            window.webxdc.sendUpdate(update, desc);
+        }
     } else if (payload.blackAddr && !blackAddr) {
         blackAddr = payload.blackAddr;
         blackName = payload.blackName;
@@ -37,15 +53,13 @@ function joinGame() {
     if (!whiteAddr) {
         update.payload = {whiteAddr: addr, whiteName: name};
         update.summary = normalizeName(name) + " is waiting for an opponent";
+        window.webxdc.sendUpdate(update, "Chess: " + update.summary);
     } else if (!blackAddr && whiteAddr !== addr) {
-        update.payload = {blackAddr: addr, blackName: name};
-        update.summary = getSummary();
+        update.payload = {request: whiteAddr, addr: addr, name: name};
+        window.webxdc.sendUpdate(update, "Chess: " + normalizeName(name) + " requested to join game");
     } else {
         console.log("Warning: ignoring call to joinGame()");
-        return;
     }
-    const desc = "Chess: " + normalizeName(name) + " joined the game";
-    window.webxdc.sendUpdate(update, desc);
 }
 
 
@@ -105,11 +119,26 @@ $(() => {
             } else if (payload.whiteAddr && !whiteAddr) {
                 whiteAddr = payload.whiteAddr;
                 whiteName = payload.whiteName;
+            } else if (!request && payload.request && payload.request === whiteAddr) {
+                request = payload;
             } else if (payload.blackAddr && !blackAddr) {
                 blackAddr = payload.blackAddr;
                 blackName = payload.blackName;
             }
         });
+        if (!blackAddr && request && window.webxdc.selfAddr === whiteAddr) {
+            blackAddr = request.addr;
+            blackName = request.name;
+            const desc = "Chess: " + normalizeName(blackName) + " joined the game";
+            const update = {
+                payload: {
+                    blackAddr: blackAddr,
+                    blackName: blackName
+                },
+                summary: getSummary()
+            };
+            window.webxdc.sendUpdate(update, desc);
+        }
 
         const root = document.getElementById("app");
         const HomeComponent = {
@@ -125,19 +154,36 @@ $(() => {
                     );
                 } else {
                     if (whiteAddr) {
-                        div.children.push(
-                            m("h3.sub", [
+                        let status;
+                        if (request) {
+                            if (request.addr == window.webxdc.selfAddr) {
+                                status = [
+                                    "Waiting for ",
+                                    m("div.tag.white", normalizeName(whiteName)),
+                                ];
+                            } else {
+                                status = [
+                                    m("div.tag.black", normalizeName(request.name)),
+                                    " requested to join ",
+                                    m("div.tag.white", normalizeName(whiteName)),
+                                ];
+                            }
+                        } else {
+                            status = [
                                 m("div.tag.white", normalizeName(whiteName)),
                                 " is waiting for opponent..."
-                            ])
+                            ];
+                        }
+                        div.children.push(m("h3.sub", status));
+                    }
+                    if (!request) {
+                        div.children.push(
+                            m("a#join-btn", {
+                                class: "btn",
+                                onclick: () => joinGame()
+                            }, whiteAddr? "Join Game" : "Start Game")
                         );
                     }
-                    div.children.push(
-                        m("a#join-btn", {
-                            class: "btn",
-                            onclick: () => joinGame()
-                        }, "Join Game")
-                    );
                 }
                 return div;
             }
