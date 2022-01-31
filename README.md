@@ -1,6 +1,6 @@
 # Chess Board
 
-A webXdc chess game for two players, made with [chess.js](https://github.com/jhlywa/chess.js) and [chessboard.js](chessboardjs.com)
+A webXdc chess game for two players, made with [chess.js](https://github.com/jhlywa/chess.js) and [chessboard.js](https://chessboardjs.com)
 
 ## Testing
 
