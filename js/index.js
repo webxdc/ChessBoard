@@ -57,7 +57,8 @@ function joinGame() {
         window.webxdc.sendUpdate(update, "Chess: " + update.summary);
     } else if (!blackAddr && whiteAddr !== addr) {
         update.payload = {request: whiteAddr, addr: addr, name: name};
-        window.webxdc.sendUpdate(update, "Chess: " + normalizeName(name) + " requested to join game");
+        update.summary = normalizeName(name) + " requested to join game";
+        window.webxdc.sendUpdate(update, "Chess: " + update.summary);
     } else {
         console.log("Warning: ignoring call to joinGame()");
     }
@@ -190,6 +191,7 @@ $(() => {
                                 status = [
                                     "Waiting for ",
                                     m("div.tag.white", normalizeName(whiteName)),
+                                    " to accept..."
                                 ];
                             } else {
                                 status = [
