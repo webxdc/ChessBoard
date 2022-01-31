@@ -39,7 +39,7 @@ function getStatus() {
     if (game.in_checkmate()) {
         const winner = (game.turn() === "b")? m("div.tag.white", normalizeName(whiteName)) : m("div.tag.black", normalizeName(blackName));
         status = ["Game over, ", name, " is in checkmate, ", winner, " wins"];
-    } else if (surrenderAddr) {
+    } else if (surrenderAddr && !inReplayMode) {
         const winner = (game.turn() === "b")? m("div.tag.white", normalizeName(whiteName)) : m("div.tag.black", normalizeName(blackName));
         status = ["Game over, ", name, " surrenders, ", winner, " wins"];
     } else if (game.in_draw()) {

@@ -97,6 +97,9 @@ function replay() {
             i++;
             if (i < history.length) {
                 runTurn();
+            } else {
+                inReplayMode = false;
+                m.redraw();
             }
         }, 1500)
     }
