@@ -86,6 +86,7 @@ function replay() {
     const history = game.history();
     game.reset();
     board.position('start');
+    clearHighlight();
     var i = 0;
 
     function runTurn() {

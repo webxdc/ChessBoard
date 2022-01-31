@@ -75,8 +75,13 @@ function initBoard() {
 }
 
 
-function setHighlight() {
+function clearHighlight() {
     $board.find('.square-55d63').removeClass('highlight-lastmove');
+}
+
+
+function setHighlight() {
+    clearHighlight();
     if (lastMove) {
         $board.find(".square-" + lastMove.from).addClass("highlight-lastmove");
         $board.find(".square-" + lastMove.to).addClass("highlight-lastmove");
