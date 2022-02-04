@@ -11,20 +11,22 @@ const BoardComponent = {
             m("h3.sub", getStatus())
         ]);
         const turn = (game.turn() === "w")? whiteAddr : blackAddr;
-        if (surrenderAddr || game.game_over()) {
-            container.children.push(
-                m("a", {
-                    class: "btn",
-                    onclick: () => replay()
-                }, "Replay")
-            );
-        } else if (!inReplayMode && window.webxdc.selfAddr === turn) {
-            container.children.push(
-                m("a", {
-                    class: "btn",
-                    onclick: () => surrender()
-                }, "Surrender")
-            );
+        if (!inReplayMode) {
+            if (surrenderAddr || game.game_over()) {
+                container.children.push(
+                    m("a", {
+                        class: "btn",
+                        onclick: () => replay()
+                    }, "Replay")
+                );
+            } else if (window.webxdc.selfAddr === turn) {
+                container.children.push(
+                    m("a", {
+                        class: "btn",
+                        onclick: () => surrender()
+                    }, "Surrender")
+                );
+            }
         }
         return container;
     },
@@ -140,8 +142,7 @@ function onDrop(source, target) {
 
     lastMove = move;
     const desc = "Chess: " + source + "-" + target,
-          update = {payload: {move: move}};
-    update.summary = getSummary();
+          update = {payload: {move: move}, summary: getSummary()};
     if (game.game_over()) {
         update.info = "Chess: " + update.summary;
     }
