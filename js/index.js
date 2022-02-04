@@ -187,7 +187,7 @@ $(() => {
                     if (whiteAddr) {
                         let status;
                         if (request) {
-                            if (request.addr == window.webxdc.selfAddr) {
+                            if (request.addr === window.webxdc.selfAddr) {
                                 status = [
                                     "Waiting for ",
                                     m("div.tag.white", normalizeName(whiteName)),
