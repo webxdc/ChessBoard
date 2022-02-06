@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.4.0
+## 0.6.0
 
 - initial release
 
 
-[Unreleased]: https://github.com/adbenitez/ChessBoard.xdc/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/adbenitez/ChessBoard.xdc/compare/v0.6.0...HEAD
