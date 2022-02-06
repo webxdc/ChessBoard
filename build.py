@@ -2,6 +2,7 @@
 import argparse
 import os
 import shutil
+import sys
 
 import htmlmin
 import lesscpy
@@ -32,42 +33,42 @@ def size_fmt(num: float) -> str:
     suffix = "B"
     for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
-            return "%3.1f%s%s" % (num, unit, suffix)
+            return "%3.1f%s%s" % (num, unit, suffix)  # noqa
         num /= 1024.0
-    return "%.1f%s%s" % (num, "Yi", suffix)
+    return "%.1f%s%s" % (num, "Yi", suffix)  # noqa
 
 
-def minify_js(files: list) -> None:
+def minify_js() -> None:
     if os.path.exists("js"):
         os.makedirs("build/js")
         files.extend(
             [f"js/{name}" for name in os.listdir("js") if name.endswith(".min.js")]
         )
-        for name in os.listdir("js"):
-            if not name.endswith(".min.js"):
-                with open(f"js/{name}") as src:
-                    with open(f"build/js/{name}", "w") as dest:
+        for filename in os.listdir("js"):
+            if not filename.endswith(".min.js"):
+                with open(f"js/{filename}", encoding="utf-8") as src:
+                    with open(f"build/js/{filename}", "w", encoding="utf-8") as dest:
                         dest.write(jsmin(src.read()))
 
 
-def minify_css(files: list) -> None:
+def minify_css() -> None:
     if os.path.exists("css"):
         os.makedirs("build/css")
         files.extend(
             [f"css/{name}" for name in os.listdir("css") if name.endswith(".min.css")]
         )
-        for name in os.listdir("css"):
-            if not name.endswith(".min.css"):
-                with open(f"css/{name}") as src:
-                    with open(f"build/css/{name}", "w") as dest:
+        for filename in os.listdir("css"):
+            if not filename.endswith(".min.css"):
+                with open(f"css/{filename}", encoding="utf-8") as src:
+                    with open(f"build/css/{filename}", "w", encoding="utf-8") as dest:
                         dest.write(lesscpy.compile(src, minify=True, xminify=True))
 
 
 def minify_html() -> None:
-    for name in os.listdir():
-        if name.endswith(".html"):
-            with open(name) as src:
-                with open(f"build/{name}", "w") as dest:
+    for filename in os.listdir():
+        if filename.endswith(".html"):
+            with open(filename, encoding="utf-8") as src:
+                with open(f"build/{filename}", "w", encoding="utf-8") as dest:
                     dest.write(htmlmin.minify(src.read()))
 
 
@@ -88,8 +89,19 @@ if __name__ == "__main__":
     if os.path.exists("assets"):
         shutil.copytree("assets", "build/assets")
 
-    minify_js(files)
-    minify_css(files)
+    # TRANSCRYPT
+    if os.path.exists("app.py"):
+        from transcrypt.__main__ import main as transcrypt
+        sys.argv = ["transcrypt"]
+        if args.debug:
+            sys.argv.append("-n")
+        sys.argv.append("app.py")
+        transcrypt()
+        shutil.copytree("__target__", "build/__target__")
+        os.remove(f"build/__target__/app.project")
+
+    minify_js()
+    minify_css()
     minify_html()
 
     # ADD METADATA
