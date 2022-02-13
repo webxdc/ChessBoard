@@ -41,27 +41,64 @@ def size_fmt(num: float) -> str:
 def minify_js() -> None:
     if os.path.exists("js"):
         os.makedirs("build/js")
-        files.extend(
-            [f"js/{name}" for name in os.listdir("js") if name.endswith(".min.js")]
-        )
-        for filename in os.listdir("js"):
-            if not filename.endswith(".min.js"):
-                with open(f"js/{filename}", encoding="utf-8") as src:
-                    with open(f"build/js/{filename}", "w", encoding="utf-8") as dest:
-                        dest.write(jsmin(src.read()))
+
+        bundle = False
+        with open("index.html", encoding="utf-8") as src:
+            if "js/bundle.js" in src.read():
+                bundle = True
+
+        if bundle:
+            with open(f"build/js/bundle.js", "w", encoding="utf-8") as dest:
+                for filename in sorted(os.listdir("js")):
+                    if not filename.endswith(".js"):
+                        continue
+                    with open(f"js/{filename}", encoding="utf-8") as src:
+                        if filename.endswith(".min.js"):
+                            text = src.read()
+                        else:
+                            text = jsmin(src.read())
+                    dest.write(text)
+                    if not text.endswith(";"):
+                        dest.write(";")
+        else:
+            files.extend(
+                [f"js/{name}" for name in os.listdir("js") if name.endswith(".min.js")]
+            )
+            for filename in os.listdir("js"):
+                if not filename.endswith(".min.js"):
+                    with open(f"js/{filename}", encoding="utf-8") as src:
+                        with open(f"build/js/{filename}", "w", encoding="utf-8") as dest:
+                            dest.write(jsmin(src.read()))
 
 
 def minify_css() -> None:
     if os.path.exists("css"):
         os.makedirs("build/css")
-        files.extend(
-            [f"css/{name}" for name in os.listdir("css") if name.endswith(".min.css")]
-        )
-        for filename in os.listdir("css"):
-            if not filename.endswith(".min.css"):
-                with open(f"css/{filename}", encoding="utf-8") as src:
-                    with open(f"build/css/{filename}", "w", encoding="utf-8") as dest:
-                        dest.write(lesscpy.compile(src, minify=True, xminify=True))
+
+        bundle = False
+        with open("index.html", encoding="utf-8") as src:
+            if "css/bundle.css" in src.read():
+                bundle = True
+
+        if bundle:
+            with open(f"build/css/bundle.css", "w", encoding="utf-8") as dest:
+                for filename in sorted(os.listdir("css")):
+                    if not filename.endswith(".css"):
+                        continue
+                    with open(f"css/{filename}", encoding="utf-8") as src:
+                        if filename.endswith(".min.css"):
+                            dest.write(src.read())
+                        else:
+                            dest.write(lesscpy.compile(src, minify=True, xminify=True))
+        else:
+            files.extend(
+                [f"css/{name}" for name in os.listdir("css") if name.endswith(".min.css")]
+            )
+            for filename in os.listdir("css"):
+                if not filename.endswith(".min.css"):
+                    with open(f"css/{filename}", encoding="utf-8") as src:
+                        with open(f"build/css/{filename}", "w", encoding="utf-8") as dest:
+                            dest.write(lesscpy.compile(src, minify=True, xminify=True))
 
 
 def minify_html() -> None:
@@ -117,8 +154,10 @@ if __name__ == "__main__":
     shutil.make_archive(f"{project_root}/{app_archive}", "zip")
     os.chdir(project_root)
     os.rename(f"{app_archive}.zip", app_archive)
+
+    # for testing:
     if os.path.exists("webxdc.js"):
-        shutil.copyfile("webxdc.js", "build/webxdc.js")  # for testing
+        shutil.copyfile("webxdc.js", "build/webxdc.js")
 
     with open(app_archive, "rb") as file:
         size = len(file.read())

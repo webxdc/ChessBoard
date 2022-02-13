@@ -2,8 +2,8 @@ name = "Chess Board"
 
 [store]
 id="com.github.adbenitez.ChessBoard"
-version_name=0.6
-version_code=1
+version_name=0.7
+version_code=2
 author="adbenitez"
 author_email="adbenitez@nauta.cu"
 description="Play chess with your friends"
