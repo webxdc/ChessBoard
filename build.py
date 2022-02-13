@@ -92,6 +92,7 @@ if __name__ == "__main__":
     # TRANSCRYPT
     if os.path.exists("app.py"):
         from transcrypt.__main__ import main as transcrypt
+
         sys.argv = ["transcrypt"]
         if args.debug:
             sys.argv.append("-n")
