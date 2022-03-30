@@ -13,11 +13,17 @@ let board,
 function receiveUpdate(update) {
     const payload = update.payload;
     if (payload.move) {
-        if (lastMove !== payload.move) {  // the move is not from self
-            game.move(payload.move);
-            lastMove = payload.move;
-            board.position(game.fen());
-            setHighlight();
+        if (board && update.serial === update.max_serial) {
+            if (lastMove !== payload.move) {  // the move is not from self
+                game.move(payload.move);
+                lastMove = payload.move;
+                board.position(game.fen());
+                setHighlight();
+            }
+        } else {
+            if (game.move(payload.move)) {
+                lastMove = payload.move;
+            }
         }
     } else if (payload.surrenderAddr) {
         surrenderAddr = payload.surrenderAddr;
@@ -26,9 +32,15 @@ function receiveUpdate(update) {
         whiteName = payload.whiteName;
     } else if (!request && payload.request && payload.request === whiteAddr) {
         request = payload;
-        if (window.webxdc.selfAddr === whiteAddr) {
-            blackAddr = payload.addr;
-            blackName = payload.name;
+    } else if (payload.blackAddr && !blackAddr) {
+        blackAddr = payload.blackAddr;
+        blackName = payload.blackName;
+    }
+
+    if (update.serial === update.max_serial) {
+        if (!blackAddr && request && window.webxdc.selfAddr === whiteAddr) {
+            blackAddr = request.addr;
+            blackName = request.name;
             const desc = "Chess: " + normalizeName(blackName) + " joined the game";
             const update = {
                 payload: {
@@ -39,11 +51,8 @@ function receiveUpdate(update) {
             };
             window.webxdc.sendUpdate(update, desc);
         }
-    } else if (payload.blackAddr && !blackAddr) {
-        blackAddr = payload.blackAddr;
-        blackName = payload.blackName;
+        m.redraw();
     }
-    m.redraw();
 }
 
 
@@ -135,95 +144,59 @@ function getSummary() {
 
 $(() => {
     game = new Chess();
-
-    window.webxdc.getAllUpdates().then((updates) => {
-        // load game state
-        updates.forEach((update) => {
-            const payload = update.payload;
-            if (payload.move) {
-                if (game.move(payload.move)) {
-                    lastMove = payload.move;
-                }
-            } else if (payload.surrenderAddr) {
-                surrenderAddr = payload.surrenderAddr;
-            } else if (payload.whiteAddr && !whiteAddr) {
-                whiteAddr = payload.whiteAddr;
-                whiteName = payload.whiteName;
-            } else if (!request && payload.request && payload.request === whiteAddr) {
-                request = payload;
-            } else if (payload.blackAddr && !blackAddr) {
-                blackAddr = payload.blackAddr;
-                blackName = payload.blackName;
-            }
-        });
-        if (!blackAddr && request && window.webxdc.selfAddr === whiteAddr) {
-            blackAddr = request.addr;
-            blackName = request.name;
-            const desc = "Chess: " + normalizeName(blackName) + " joined the game";
-            const update = {
-                payload: {
-                    blackAddr: blackAddr,
-                    blackName: blackName
-                },
-                summary: getSummary()
-            };
-            window.webxdc.sendUpdate(update, desc);
-        }
-
-        const root = document.getElementById("root");
-        const HomeComponent = {
-            view: () => {
-                $("#root").css("align-items", "center");
-                let div = m("div#home");
+    const root = document.getElementById("root");
+    const HomeComponent = {
+        view: () => {
+            $("#root").css("align-items", "center");
+            let div = m("div#home");
+            div.children.push(
+                m("img#app-icon", {src: "assets/img/bK.svg"}),
+                m("h1#app-name", "Chess Board")
+            );
+            if (whiteAddr === window.webxdc.selfAddr) {
                 div.children.push(
-                    m("img#app-icon", {src: "assets/img/bK.svg"}),
-                    m("h1#app-name", "Chess Board")
+                    m("h3.sub", "Waiting for opponent...")
                 );
-                if (whiteAddr === window.webxdc.selfAddr) {
-                    div.children.push(
-                        m("h3.sub", "Waiting for opponent...")
-                    );
-                } else {
-                    if (whiteAddr) {
-                        let status;
-                        if (request) {
-                            if (request.addr === window.webxdc.selfAddr) {
-                                status = [
-                                    "Waiting for ",
-                                    m("div.tag.white", normalizeName(whiteName)),
-                                    " to accept..."
-                                ];
-                            } else {
-                                status = [
-                                    m("div.tag.black", normalizeName(request.name)),
-                                    " requested to join ",
-                                    m("div.tag.white", normalizeName(whiteName)),
-                                ];
-                            }
+            } else {
+                if (whiteAddr) {
+                    let status;
+                    if (request) {
+                        if (request.addr === window.webxdc.selfAddr) {
+                            status = [
+                                "Waiting for ",
+                                m("div.tag.white", normalizeName(whiteName)),
+                                " to accept..."
+                            ];
                         } else {
                             status = [
+                                m("div.tag.black", normalizeName(request.name)),
+                                " requested to join ",
                                 m("div.tag.white", normalizeName(whiteName)),
-                                " is waiting for opponent..."
                             ];
                         }
-                        div.children.push(m("h3.sub", status));
+                    } else {
+                        status = [
+                            m("div.tag.white", normalizeName(whiteName)),
+                            " is waiting for opponent..."
+                        ];
                     }
-                    if (!request) {
-                        div.children.push(
-                            m("a#join-btn", {
-                                class: "btn",
-                                onclick: () => joinGame()
-                            }, whiteAddr? "Join Game" : "Start Game")
-                        );
-                    }
+                    div.children.push(m("h3.sub", status));
                 }
-                return div;
+                if (!request) {
+                    div.children.push(
+                        m("a#join-btn", {
+                            class: "btn",
+                            onclick: () => joinGame()
+                        }, whiteAddr? "Join Game" : "Start Game")
+                    );
+                }
             }
-        };
-        m.mount(root, {
-            view: () => m(blackAddr? BoardComponent : HomeComponent)
-        });
-
-        window.webxdc.setUpdateListener(receiveUpdate);
+            return div;
+        }
+    };
+    m.mount(root, {
+        view: () => m(blackAddr? BoardComponent : HomeComponent)
     });
+
+    window.webxdc.setUpdateListener(receiveUpdate, 0);
 });
