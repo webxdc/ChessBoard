@@ -2,6 +2,10 @@
 
 A webXdc chess game for two players, made with [chess.js](https://github.com/jhlywa/chess.js) and [chessboard.js](https://chessboardjs.com)
 
+<img width=200 src=https://user-images.githubusercontent.com/9800740/170771375-74f8b87d-e47d-4339-bbf3-3bdbfd5a7cd8.png>
+
+[Download .xdc from Release Assets](https://github.com/webxdc/ChessBoard.xdc/releases), attach to a Delta Chat group and play chess with a group member!
+
 ## Building
 
 ```sh
