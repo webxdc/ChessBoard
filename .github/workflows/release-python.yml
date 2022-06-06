@@ -1,0 +1,37 @@
+name: Create .xdc release if build steps involve python
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: build .xdc file
+      id: build
+      run: |
+        pip3 install -U pip
+        pip3 install -U wheel
+        pip3 install -r requirements.txt
+        python3 build.py -n ${{ github.event.repository.name }}
+        # This is just a little control flow hack. This ensures the correct file name is uploaded.
+        if [[ ${{ github.event.repository.name }} == *.xdc ]]
+        then
+          exit 1
+        fi
+      continue-on-error: true
+    - uses: ncipollo/release-action@v1
+      if: steps.build.outcome != 'success'
+      with:
+        artifacts: ${{ github.event.repository.name }}
+    - uses: ncipollo/release-action@v1
+      if: steps.build.outcome == 'success'
+      with:
+        artifacts: ${{ github.event.repository.name }}.xdc
+
