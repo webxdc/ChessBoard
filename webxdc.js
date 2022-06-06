@@ -25,7 +25,7 @@ window.webxdc = (() => {
     return {
         selfAddr: params.get("addr") || "device0@local.host",
         selfName: params.get("name") || "device0",
-        setUpdateListener: (cb, serial) => {
+        setUpdateListener: (cb, serial = 0) => {
             var updates = getUpdates();
             var maxSerial = updates.length;
             updates.forEach((update) => {
@@ -35,6 +35,7 @@ window.webxdc = (() => {
                 }
             });
             updateListener = cb;
+            return Promise.resolve()
         },
         getAllUpdates: () => {
             console.log('[Webxdc] WARNING: getAllUpdates() is deprecated.');
@@ -75,7 +76,7 @@ window.clearXdcStorage = () => {
 }
 
 window.alterXdcApp = () => {
-    var styleControlPanel = 'position: fixed; bottom:1em; left:1em; background-color: #000; opacity:0.8; padding:.5em; font-family: sans-serif; color:#fff; z-index: 9999';
+    var styleControlPanel = 'position: fixed; bottom:1em; left:1em; background-color: #000; opacity:0.8; padding:.5em; font-size:16px; font-family: sans-serif; color:#fff; z-index: 9999';
     var styleMenuLink = 'color:#fff; text-decoration: none; vertical-align: middle';
     var styleAppIcon = 'height: 1.5em; width: 1.5em; margin-right: 0.5em; border-radius:10%; vertical-align: middle';
     var title = document.getElementsByTagName('title')[0];
@@ -88,10 +89,10 @@ window.alterXdcApp = () => {
     if (window.webxdc.selfName === "device0") {
         var div = document.createElement('div');
         div.innerHTML =
-            '<div style="' + styleControlPanel + '">' +
+            '<div id="webxdc-panel" style="' + styleControlPanel + '">' +
             '<a href="javascript:window.addXdcPeer();" style="' + styleMenuLink + '">Add Peer</a>' +
             '<span style="' + styleMenuLink + '"> | </span>' +
-            '<a href="javascript:window.clearXdcStorage();" style="' + styleMenuLink + '">Clear Storage</a>' +
+            '<a id="webxdc-panel-clear" href="javascript:window.clearXdcStorage();" style="' + styleMenuLink + '">Clear Storage</a>' +
             '<div>';
         var controlPanel = div.firstChild;
 

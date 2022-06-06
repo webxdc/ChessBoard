@@ -1,9 +1,2 @@
 name = "Chess Board"
-
-[store]
-id="com.github.adbenitez.ChessBoard"
-version_name=1.0
-version_code=3
-author="adbenitez"
-author_email="adbenitez@nauta.cu"
-description="Play chess with your friends"
+source_code_url = "https://github.com/webxdc/ChessBoard.xdc"
