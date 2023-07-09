@@ -1,3 +1,0 @@
-htmlmin==0.1.12
-jsmin==3.0.0
-lesscpy==0.15.0

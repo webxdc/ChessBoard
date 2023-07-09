@@ -3,7 +3,7 @@ html, body {
 }
 
 body {
-    background-image: url('../assets/img/board-background.png');
+    background-image: url('../img/board-background.png');
     background-position: center top;
     margin: 0;
 }
