@@ -193,7 +193,7 @@ function onDrop(source, target) {
   const desc = "Chess: " + source + "-" + target,
     update = { payload: { move: move }, summary: getSummary() };
   if (state.game.isGameOver()) {
-    update.info = "Chess: " + update.summary;
+    update.info = update.summary;
   }
   window.webxdc.sendUpdate(update, desc);
 }
@@ -249,7 +249,7 @@ function surrender() {
       winner +
       " wins",
   };
-  update.info = "Chess: " + update.summary;
+  update.info = update.summary;
   const desc = "Chess: " + update.summary;
   window.webxdc.sendUpdate(update, desc);
 }
