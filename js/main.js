@@ -47,8 +47,7 @@ function receiveUpdate(update) {
     ) {
       state.blackAddr = state.request.addr;
       state.blackName = state.request.name;
-      const desc =
-        normalizeName(state.blackName) + " joined the game";
+      const desc = normalizeName(state.blackName) + " joined the game";
       const update = {
         payload: {
           blackAddr: state.blackAddr,
