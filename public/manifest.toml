@@ -1,3 +1,3 @@
-name = "Chess Board"
+name = "ChessBoard"
 description = "A chess game for two players and many observers :)"
-source_code_url = "https://github.com/webxdc/ChessBoard.xdc"
+source_code_url = "https://github.com/webxdc/ChessBoard"

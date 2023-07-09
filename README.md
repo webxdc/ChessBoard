@@ -1,4 +1,4 @@
-# Chess Board [![CI](https://github.com/webxdc/ChessBoard/actions/workflows/ci.yml/badge.svg)](https://github.com/webxdc/ChessBoard/actions/workflows/ci.yml) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+# ChessBoard [![CI](https://github.com/webxdc/ChessBoard/actions/workflows/ci.yml/badge.svg)](https://github.com/webxdc/ChessBoard/actions/workflows/ci.yml) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 A WebXDC chess game for two human players and many observers.
 
